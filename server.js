@@ -2,7 +2,7 @@
 const { PORT } = require('./config');
 const {logger} = require('./middleware/logger')
 // Load array of notes
-const data = require('./db/notes');
+
 const data = require('./db/notes');
 const simDB = require('./db/simDB');  // <<== add this
 const notes = simDB.initialize(data); // <<== and this
@@ -43,14 +43,27 @@ app.put('/api/notes/:id', (req, res, next) => {
 
 
 
-app.get('/api/notes', (req, res) => {
-  res.json(data);
-});
-app.get('/api/notes/:id', (req, res)=>{
-  const id = req.params.id;
-  res.json(data.find(item => item.id === Number(id)));
+app.get('/api/notes', (req, res, next) => {
+  const { searchTerm } = req.query;
+
+  notes.filter(searchTerm, (err, list) => {
+    if (err) {
+      return next(err); // goes to error handler
+    }
+    res.json(list); // responds with filtered array
+  });
 });
 
+
+app.get('/api/notes/:id', (req, res)=>{
+  const id = req.params.id;
+notes.find(1005, (err, item) => {
+  if (err){
+    return next(err)
+  }
+  res.json(data.find(item => item.id === Number(id)));
+  });
+});
 
 app.get('/api/notes/:searchTerm',(req, res) => {
   const searchTerm = req.query.searchTerm;
