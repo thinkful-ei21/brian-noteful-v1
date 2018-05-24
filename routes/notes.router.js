@@ -1,16 +1,14 @@
+'use strict';
 const express = require('express');
-const router = express.router();
-const { PORT } = require('./config');
-const {logger} = require('./middleware/logger')
-const morgan = require('morgan')
+const router = express.Router();
+
 
  // Load array of notes
 
 
-const data = require('./db/notes');
-const simDB = require('./db/simDB');  // <<== add this
+const data = require('../db/notes.json');
+const simDB = require('../db/simDB.js');  // <<== add this
  const notes = simDB.initialize(data);
-
 router.get('/api/notes', (req, res, next) => {
   const { searchTerm } = req.query;
 
@@ -33,27 +31,26 @@ router.get('/notes', (req, res, next) => {
   });
 });
 
-router.get('/api/notes/:id', (req, res)=>{
+router.get('/api/notes/:id', (req, res, next)=>{
   const id = req.params.id;
-notes.find(1005, (err, item) => {
-  if (err){
-    return next(err)
-  }
-  res.json(data.find(item => item.id === Number(id)));
-  });
-});
 
-notes.update(id, updateObj, (err, item) => {
-    if (err) {
-      return next(err);
-    }
-    if (item) {
-      res.json(item);
-    } else {
-      next();
-    }
+  notes.find(id)
+      .then(item => {
+        if (item) {
+          res.json(item);
+        } else {
+          next();
+        }
+      })
+      .catch(err => {
+        next(err);
+      });
   });
-});
+
+
+
+
+
 
 router.put('/notes/:id', (req, res, next) => {
   const id = req.params.id;
@@ -74,7 +71,17 @@ router.put('/notes/:id', (req, res, next) => {
     err.status = 400;
     return next(err);
   }
-
+  notes.update(id, updateObj, (err, item) => {
+      if (err) {
+        return next(err);
+      }
+      if (item) {
+        res.json(item);
+      } else {
+        next();
+      }
+    });
+  });
 
 // Post (insert) an item
 router.post('/notes', (req, res, next) => {

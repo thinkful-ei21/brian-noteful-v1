@@ -2,7 +2,7 @@
  const { PORT } = require('./config');
 // const {logger} = require('./middleware/logger')
 const morgan = require('morgan')
-const notesRouter = require('./routes/notes.router.js stuff');
+const notesRouter = require('./routes/notes.router.js');
 const express = require('express');
 //
  const app = express();
