@@ -3,7 +3,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 const expect = chai.expect;
-
+//
 describe('Reality check', function () {
 
   it('true should be true', function () {
@@ -40,6 +40,7 @@ describe('Noteful App', function () {
     });
 
   });
+
 
   describe('404 handler', function () {
 
